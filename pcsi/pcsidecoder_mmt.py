@@ -39,18 +39,21 @@ class PCSIDecoder():
         self.Buffer = ""
         rawSerial = BitStream(rawSerial)
         # print(rawSerial)
-        raw = [s for s in rawSerial.split('0x5576', bytealigned = True)]
+        raw = [s for s in rawSerial.split('0x76', bytealigned = True)]
         #print(raw)
-
-        for packet in raw[1:-1]:  # skip the stuff before the first '0xc0'
+        raw[-1].append("0x55")
+        #print(raw[-1])
+        for packet in raw[1:]:  # skip the stuff before the first '0xc0'
             packet = self.Buffer + packet
-            if len(packet) >= 1792:
+            #print(len(packet))
+            if len(packet) == 1792:
                 self.Buffer = ""
-                packet.read('uint:8')
+                #packet.read('uint:8')
                 packet.read('uint:8')
                 callsign_Base40 = packet.read('uint:32')
                 imageID = packet.read('uint:8')
                 packetNum = packet.read('uint:16')
+                #print(packetNum)
                 ny= packet.read('uint:8')*16
                 nx= packet.read('uint:8')*16
                 numYCbCr = packet.read('uint:8')
@@ -68,7 +71,7 @@ class PCSIDecoder():
                     pixelYData.append(packet.read( 'uint:' + str(channelBD)))
                     pixelCbData.append(packet.read( 'uint:' + str(channelBD)))
                     pixelCrData.append(packet.read( 'uint:' + str(channelBD)))
-                while packet.len - packet.pos >= channelBD:
+                while packet.len - packet.pos - 8>= channelBD:
                     pixelYData.append(packet.read( 'uint:' + str(channelBD)))
 
                 pixelList = shufflePixels(ny,nx)
@@ -106,4 +109,6 @@ class PCSIDecoder():
                 # self.Z = ycbcr2rgb(self.Z.astype(float))
                 self.pixelsY[hashID].update(pixelID)
                 self.pixelsCbCr[hashID].update(pixelID[:len(pixelCrData)])
-        self.Buffer =  packet
+            elif len(packet) > 1792: 
+                self.Buffer = ""
+            else: self.Buffer =  packet
