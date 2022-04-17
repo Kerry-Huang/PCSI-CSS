@@ -58,10 +58,10 @@ class PCSIolw:
 
     def go(self):
         # Xat2 = owlqn(self.nx*self.ny, self.evaluate, None, 5)
-        print("Starting optimizations")
+        #print("Starting optimizations")
         starttime = time.time()
-        Xat2 = lbfgs.fmin_lbfgs(self.evaluate, self.lastXat2, orthantwise_c=5)
-        print("Optimization found after {0:0.1f} seconds.".format(time.time()-starttime))
+        Xat2 = lbfgs.fmin_lbfgs(self.evaluate, self.lastXat2, orthantwise_c=5, line_search="wolfe")
+        #print("Optimization found after {0:0.1f} seconds.".format(time.time()-starttime))
         self.lastXat2 = Xat2
         # transform the output back into the spatial domain
         Xat = Xat2.reshape(self.nx, self.ny).T # stack columns

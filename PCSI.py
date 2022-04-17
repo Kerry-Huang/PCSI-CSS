@@ -26,6 +26,22 @@ def encode_callsign(callsign):
             base40_code += ord(callsign[i]) - ord('0') + 1
     return base40_code
 
+def decode_callsign(base40_code):
+    callsign = ""   
+    i = 0
+    while(base40_code>0):
+        i -= 1
+        s = base40_code % 40
+        if(s==0):
+            callsign += '-'
+        elif(s<11):
+            callsign += chr(ord('0') + s - 1)
+        elif(s<14):
+            callsign += '-'
+        else: callsign += chr(ord('A') + s - 14)
+        base40_code = base40_code // 40
+    return callsign
+
 def encode_PCSI(inputfile,outputfile,imageID,callsign,bitDepth,chromaCompression):
     header = bitstring.pack(
         'uint:8, uint:8, uint:32',
@@ -41,7 +57,7 @@ def encode_PCSI(inputfile,outputfile,imageID,callsign,bitDepth,chromaCompression
                       APRSprefixBytes=False,  # if we change this, we have to change the decode too
                       base91=False)
     
-    for i in range(0,txImage.largestFullPacketNum+1):
+    for i in range(0,txImage.largestFullPacketNum+2):
         outputfile.write(header+txImage.genPayload(i)) 
 
 def decode_PCSI(imageSelected, X, nynx, pixelsY, pixelsCbCr):
@@ -106,4 +122,14 @@ if(not args.encode and args.decode):
                         decoder.nynx[imageSelected][:],
                         list(decoder.pixelsY[imageSelected]),
                         list(decoder.pixelsCbCr[imageSelected]))
+
+    ny = decoder.nynx[imageSelected][0]
+    nx = decoder.nynx[imageSelected][1]
+    pixelsY = len(decoder.pixelsY[imageSelected])
+    pixelsPerPacket = decoder.pixelsPerPacket[imageSelected]
+    print("Callsign:", decode_callsign(decoder.callsign_Base40))
+    print("ImageID:", decoder.imageID)
+    print("Resolution:",str(nx)+"x"+str(ny))
+    print("Total Packets", ((ny*nx)//pixelsPerPacket))
+    print("Received Packets", (pixelsY//pixelsPerPacket))
         

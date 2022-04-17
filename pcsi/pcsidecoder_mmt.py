@@ -25,6 +25,8 @@ class PCSIDecoder():
         self.nynx = {}
         self.destFilter = ""
         self.pixelsPerPacket = {}
+        self.callsign_Base40 = ""
+        self.imageID = 0
         # self.uninit=1
     def processSerial(self, rawSerial):
         """
@@ -46,7 +48,7 @@ class PCSIDecoder():
                 self.Buffer = ""
                 packet.read('uint:8')
                 packet.read('uint:8')
-                packet.read('uint:32')
+                callsign_Base40 = packet.read('uint:32')
                 imageID = packet.read('uint:8')
                 packetNum = packet.read('uint:16')
                 ny= packet.read('uint:8')*16
@@ -54,6 +56,9 @@ class PCSIDecoder():
                 numYCbCr = packet.read('uint:8')
                 channelBD = packet.read('uint:8')+1
                 #print([controlField, PIDField, imageID, ny, nx, packetNum, numYCbCr, channelBD])
+                
+                self.callsign_Base40 = callsign_Base40
+                self.imageID = imageID
                 hashID = str(imageID)
                 # print(hashID)
                 pixelYData = []
