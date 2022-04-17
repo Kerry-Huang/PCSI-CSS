@@ -27,6 +27,8 @@ class PCSIDecoder():
         self.pixelsPerPacket = {}
         self.callsign_Base40 = ""
         self.imageID = 0
+        self.shufflePixelsFlag = 0
+        self.pixelList = []
         # self.uninit=1
     def processSerial(self, rawSerial):
         """
@@ -74,7 +76,13 @@ class PCSIDecoder():
                 while packet.len - packet.pos - 8>= channelBD:
                     pixelYData.append(packet.read( 'uint:' + str(channelBD)))
 
-                pixelList = shufflePixels(ny,nx)
+                if (self.shufflePixelsFlag == 0):
+                    self.pixelList = shufflePixels(ny,nx)
+                    self.shufflePixelsFlag = 1
+                pixelList = self.pixelList
+
+                # pixelList = shufflePixels(ny,nx)
+
                 startingPixel = packetNum * (len(pixelYData))  # last packet might have fewer!
                 pixelID = pixelList[startingPixel:startingPixel+len(pixelYData)]
 

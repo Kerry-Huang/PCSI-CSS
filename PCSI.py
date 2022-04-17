@@ -1,5 +1,6 @@
 #import re
 #import os
+from ctypes.wintypes import PINT
 import numpy as np
 import imageio
 from pcsi.pcsiolw import PCSIolw
@@ -116,11 +117,11 @@ if(not args.encode and args.decode):
         newdata = f.read()
         #print(newdata)
     if newdata:
-        for imageSelected in decoder.Z:
-            imageio.imwrite("pixel_raw_"+args.outputfile, decoder.Z[imageSelected])
         decoder.processSerial(newdata)
-        for imageSelected in decoder.Z:
+#        for imageSelected in decoder.Z:
+#            imageio.imwrite("pixel_raw_"+args.outputfile, decoder.Z[imageSelected])
 
+        for imageSelected in decoder.Z:
             decode_PCSI(args.outputfile,
                         decoder.Z[imageSelected][:],
                         decoder.nynx[imageSelected][:],
