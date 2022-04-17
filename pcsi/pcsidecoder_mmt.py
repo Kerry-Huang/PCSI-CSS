@@ -44,7 +44,7 @@ class PCSIDecoder():
 
         for packet in raw[1:-1]:  # skip the stuff before the first '0xc0'
             packet = self.Buffer + packet
-            if len(packet) >= 1784:
+            if len(packet) >= 1792:
                 self.Buffer = ""
                 packet.read('uint:8')
                 packet.read('uint:8')
