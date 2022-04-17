@@ -34,9 +34,9 @@ def encode_PCSI(inputfile,outputfile,imageID,callsign,bitDepth,chromaCompression
         encode_callsign(callsign)).tobytes()
 
     txImage = PCSItxImage(inputfile,
-                      imageID=0,
-                      bitDepth=12,
-                      chromaCompression=16,
+                      imageID,
+                      bitDepth,
+                      chromaCompression,
                       infoBytes=217,
                       APRSprefixBytes=False,  # if we change this, we have to change the decode too
                       base91=False)
@@ -82,7 +82,7 @@ if __name__=="__main__":
                         help="Set the image ID (0-255).")
     parser.add_argument("-b", "--bitdepth", type=int, default=12,
                         help="Bit depth transmit (e.g., 24 for 24-bit color)")
-    parser.add_argument("-C", "--chromacomp", type=int, default=[20], nargs='*',
+    parser.add_argument("-C", "--chromacomp", type=int, default=20,
                         help="Chroma Compression ratio")
     parser.add_argument("outputfile", type=str,
                         help="Output file name")
