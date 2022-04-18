@@ -60,7 +60,7 @@ def encode_PCSI(inputfile,outputfile,imageID,callsign,bitDepth,chromaCompression
     
     for i in range(0,txImage.largestFullPacketNum+1):
         outputfile.write(header+txImage.genPayload(i)) 
-    print("Wrote",txImage.largestFullPacketNum+1,"Packets")
+    print("Wrote",txImage.largestFullPacketNum+1,"packets")
 
 def decode_PCSI(imageSelected, X, nynx, pixelsY, pixelsCbCr):
     Z = np.zeros(X.shape, dtype='uint8')
