@@ -133,7 +133,7 @@ if(not args.encode and args.decode):
     pixelsY = len(decoder.pixelsY[imageSelected])
     pixelsPerPacket = decoder.pixelsPerPacket[imageSelected]
     print("Callsign:", decode_callsign(decoder.callsign_Base40))
-    print("ImageID:", decoder.imageID)
+    print("Image ID:", '{:02X}'.format(decoder.imageID))
     print("Resolution:",str(nx)+"x"+str(ny))
     print("Total Packets", ((ny*nx)//pixelsPerPacket))
     print("Received Packets", (pixelsY//pixelsPerPacket))
