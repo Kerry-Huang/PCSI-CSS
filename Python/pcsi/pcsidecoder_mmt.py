@@ -69,12 +69,30 @@ class PCSIDecoder():
                 pixelYData = []
                 pixelCbData = []
                 pixelCrData = []
-                for tmp in range(numYCbCr):
-                    pixelYData.append(packet.read( 'uint:' + str(channelBD)))
-                    pixelCbData.append(packet.read( 'uint:' + str(channelBD)))
-                    pixelCrData.append(packet.read( 'uint:' + str(channelBD)))
-                while packet.len - packet.pos - 8>= channelBD:
-                    pixelYData.append(packet.read( 'uint:' + str(channelBD)))
+                pixelData = packet.readlist(str(numYCbCr) +'*(uint:' + str(channelBD)+', uint:' + str(channelBD)+', uint:' + str(channelBD)+')')
+                pixelData = np.array(pixelData).reshape(-1,3)
+                pixelData.T
+                pixelYData = pixelData[:,0].tolist()
+                pixelCbData = pixelData[:,1].tolist()
+                pixelCrData = pixelData[:,2].tolist()
+# =============================================================================
+#                 for tmp in range(numYCbCr):
+#                     print( 'uint:' + str(channelBD)+', uint:' + str(channelBD)+', uint:' + str(channelBD))
+#                     Y_new,Cb_new,Cr_new = packet.readlist( 'uint:' + str(channelBD)+', uint:' + str(channelBD)+', uint:' + str(channelBD))
+#                     pixelYData.append(Y_new)
+#                     pixelCbData.append(Cb_new)
+#                     pixelCrData.append(Cr_new)               
+#                     pixelYData.append(packet.read( 'uint:' + str(channelBD)))
+#                     pixelCbData.append(packet.read( 'uint:' + str(channelBD)))
+#                     pixelCrData.append(packet.read( 'uint:' + str(channelBD)))
+#                 print((packet.len-packet.pos-8)//channelBD)
+# =============================================================================
+                pixelYData.extend(packet.readlist(str((packet.len-packet.pos-8)//channelBD)+ '* uint:' + str(channelBD)))
+# =============================================================================
+#                 print(pixelYData)
+#                  while packet.len - packet.pos - 8>= channelBD:
+#                      pixelYData.append(packet.read( 'uint:' + str(channelBD)))
+# =============================================================================
 
                 if (self.shufflePixelsFlag == 0):
                     self.pixelList = shufflePixels(ny,nx)
