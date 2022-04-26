@@ -1,5 +1,5 @@
 #import re
-#import os
+import os
 from ctypes.wintypes import PINT
 import numpy as np
 import imageio
@@ -75,12 +75,31 @@ def decode_PCSI(imageSelected, X, nynx, pixelsY, pixelsCbCr):
     bCb = XCb.T.flat[riCbCr].astype(float)
     bCr = XCr.T.flat[riCbCr].astype(float)
     # print([bY.shape, len(riY)])
-    pcsiSolverY = PCSIolw(nx, ny, bY, riY)
-    Z[:,:,0] = pcsiSolverY.go().astype('uint8')# choosenImage.get()
-    pcsiSolverCb = PCSIolw(nx, ny, bCb, riCbCr)
-    Z[:,:,1] = pcsiSolverCb.go().astype('uint8')# choosenImage.get()
-    pcsiSolverCr = PCSIolw(nx, ny, bCr, riCbCr)
-    Z[:,:,2] = pcsiSolverCr.go().astype('uint8')# choosenImage.get()
+    
+    if not os.path.exists(imageSelected+"_Y.npy"):
+        np.save(imageSelected+"_Y.npy",np.zeros(nx*ny))
+    Xat2_Y = np.load(imageSelected+"_Y.npy")
+    pcsiSolverY = PCSIolw(nx, ny, bY, riY, Xat2_Y)
+    Z[:,:,0],Xat2_Y = pcsiSolverY.go()
+    np.save(imageSelected+"_Y.npy",Xat2_Y)
+    Z[:,:,0] = Z[:,:,0].astype('uint8')# choosenImage.get()
+
+    if not os.path.exists(imageSelected+"_Cb.npy"):
+        np.save(imageSelected+"_Cb.npy",np.zeros(nx*ny))
+    Xat2_Cb = np.load(imageSelected+"_Cb.npy")
+    pcsiSolverCb = PCSIolw(nx, ny, bCb, riCbCr, Xat2_Cb)
+    Z[:,:,1],Xat2_Cb = pcsiSolverCb.go()
+    np.save(imageSelected+"_Cb.npy",Xat2_Cb)
+    Z[:,:,1] = Z[:,:,1].astype('uint8')# choosenImage.get()
+
+    if not os.path.exists(imageSelected+"_Cr.npy"):
+        np.save(imageSelected+"_Cr.npy",np.zeros(nx*ny))
+    Xat2_Cr = np.load(imageSelected+"_Cr.npy")
+    pcsiSolverCr = PCSIolw(nx, ny, bCr, riCbCr, Xat2_Cr)
+    Z[:,:,2],Xat2_Cr = pcsiSolverCr.go()
+    np.save(imageSelected+"_Cr.npy",Xat2_Cr)
+    Z[:,:,2] = Z[:,:,2].astype('uint8')# choosenImage.get()
+
     Z=cv2.cvtColor(Z, cv2.COLOR_YCrCb2BGR)  # open CV switches order of channels, so this works
     imageio.imwrite(imageSelected, Z)
 

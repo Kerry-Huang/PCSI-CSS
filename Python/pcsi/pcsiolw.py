@@ -17,12 +17,12 @@ from cv2 import dct, idct
 
 
 class PCSIolw:
-    def __init__(self, nx, ny, b, ri):
+    def __init__(self, nx, ny, b, ri,lastXat2):
         self.nx = nx
         self.ny = ny
         self.b = b
         self.ri = ri
-        self.lastXat2 = np.zeros(nx*ny)
+        self.lastXat2 = lastXat2
 
     def evaluate(self, x, g):
         """An in-memory evaluation callback."""
@@ -59,8 +59,9 @@ class PCSIolw:
     def go(self):
         # Xat2 = owlqn(self.nx*self.ny, self.evaluate, None, 5)
         #print("Starting optimizations")
-        starttime = time.time()
-        Xat2 = lbfgs.fmin_lbfgs(self.evaluate, self.lastXat2, orthantwise_c=5, line_search="wolfe")
+        #starttime = time.time()
+        Xat2 = lbfgs.fmin_lbfgs(self.evaluate, self.lastXat2, orthantwise_c=5, line_search="wolfe", max_iterations=0)
+        #print(Xat2)
         #print("Optimization found after {0:0.1f} seconds.".format(time.time()-starttime))
         self.lastXat2 = Xat2
         # transform the output back into the spatial domain
@@ -68,4 +69,4 @@ class PCSIolw:
         Xa = idct(Xat)
         Xa[Xa < 0] = 0
         Xa[Xa>255] = 255
-        return Xa
+        return Xa,Xat2
